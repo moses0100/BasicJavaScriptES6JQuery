@@ -65,3 +65,5 @@ switch (day) {
         document.body.style.backgroundColor = "white";
         break;
 }
+
+// day1 complete
