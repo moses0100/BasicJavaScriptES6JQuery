@@ -7,3 +7,6 @@ console.log(address);
 
 var result=document.getElementById("result").innerHTML="ชื่อ: "+fullname+"<br>ที่อยู่: "+address;
 }
+
+
+//Complete Day 2
