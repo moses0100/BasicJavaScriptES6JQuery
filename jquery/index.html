@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Jquery</title>
+    <style>
+        .setbg {
+            background-color: aqua;
+            color: brown;
+            font-size: 24px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Basic Jquery</h1>
+    <p id="p1">Lorem ipsum dolor sit amet consectetur adipisicing elit. Eveniet saepe facere hic vitae repudiandae? Vero
+        veritatis, libero ut ratione repudiandae aliquam nulla ullam unde harum tempore provident error dignissimos
+        sequi.</p>
+    <p class="p2">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sint officia in, dolores ducimus vel, totam
+        minus at fugit reiciendis animi provident! Laboriosam, sed. Temporibus, incidunt maxime! Alias sed iusto non.
+    </p>
+    <span class="p2">Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit laborum ea quis architecto itaque
+        quas
+        reprehenderit esse illum aspernatur quia, provident sequi fugiat eum? Vitae hic reprehenderit quae tenetur
+        repudiandae?</span>
+    <article>Lorem ipsum dolor sit amet consectetur adipisicing elit. Vel numquam mollitia tempore quidem voluptates,
+        error soluta quis, et amet animi unde fuga provident placeat autem est! Reprehenderit nisi corporis ut.
+    </article>
+
+    <script src="jquery-4.0.0.min.js"></script>
+    <script>
+        $(function () {
+            // alert("OK")
+            //การเข้าถึง tag h1
+            $("h1").css('color', 'red')
+            //การเข้าถึง tag p1
+            $("#p1").css('background-color', 'yellow')
+
+            //การเข้าถึง p ที่เป็น class p2
+            $(".p2").css('background-color', 'pink')
+            $("span.p2").css('background-color', 'green')
+            //การเรียกใช้ class css
+            $("article").addClass('setbg')
+            //การลบ class css
+            $("article").removeClass('setbg')
+            //การสลับระหว่าง remove กับ add
+            $("article").toggleClass('setbg')
+        })
+
+
+    </script>
+</body>
+
+</html>
