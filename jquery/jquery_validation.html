@@ -28,6 +28,10 @@
             <label for="">Tel</label>
             <input type="mobile" name="tel" id="tel"><br>
         </div>
+        <div>
+            <label for="">ID Card</label>
+            <input type="text" name="idcard" id="idcard"><br>
+        </div>
 
 
         <button type="submit">Submit</button>
@@ -35,17 +39,43 @@
 
     <script src="jquery-4.0.0.min.js"></script>
     <script src="jquery-validation/jquery.validate.min.js"></script>
+    <script src="jquery-validation/additional-methods.min.js"></script>
     <script>
+        jQuery.validator.addMethod(
+            "checkIDCard",
+            function (value, element) {
+                var pid = value;
+                pid = pid.toString().replace(/\D/g, "");
+                if (pid.length == 13) {
+                    var sum = 0;
+                    for (var i = 0; i < pid.length - 1; i++) {
+                        sum += Number(pid.charAt(i)) * (pid.length - i);
+                    }
+                    var last_digit = (11 - sum % 11) % 10;
+                    $(element).val(pid);
+                    return pid.charAt(12) == last_digit;
+                } else {
+                    return false;
+                }
+            },
+            "รหัสบัตรประชาชนไม่ถูกต้อง"
+        );
+
         $("form#register").validate({
             rules: {
                 fullname: {
                     required: true
                 },
                 email: {
-                    required: true
+                    required: true,
+                    email: true
                 },
                 tel: {
                     required: true
+                },
+                idcard: {
+                    required: true,
+                    checkIDCard: true
                 }
             },
             messages: {
@@ -54,6 +84,7 @@
                 },
                 email: {
                     required: "ต้องกรอกemail",
+                    email: "รูปแบบemailยังไม่ถูกต้อง"
                 },
                 tel: {
                     required: "ต้องกรอกเบอร์",
@@ -65,8 +96,33 @@
                 //error.appendTo("help-block");
             },
             submitHandler: function (form) {
+                // รับค่าจากฟอร์ม
+                let fullname = $('#fullname').val();
+                let email = $('#email').val();
+                let tel = $('#tel').val();
+                let idcard = $('#idcard').val();
 
+                alert(fullname + email + tel + idcard);
+
+                $.ajax({
+                    type: "get",
+                    url: "testpost.html",
+                    data: { fullname: fullname, email: email, tel: tel, idcard: idcard },
+                    success: function (response) {
+                        alert(response)
+                        // Reset form
+                        $("form#register").trigger('reset')
+                        // Forcus cursor
+                        $("#fullname").focus()
+                    }
+                });
             }
+        })
+
+        $(function () {
+            $('button#showpop').click(function () {
+                $('form#register').show();
+            })
         })
     </script>
 </body>

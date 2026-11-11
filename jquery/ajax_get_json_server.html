@@ -1,0 +1,132 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajax get JSON from Server</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="jumbotron">
+        <div class="container">
+            <h1 class="display-3">Product Data table</h1>
+            <p class="lead">Product Data list</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>id</th>
+                    <th>Name</th>
+                    <th>Barcode</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <script src="jquery-4.0.0.min.js"></script>
+    <script>
+        $(function () {
+            function getJsonArray(responseText) {
+                var start = responseText.indexOf('[');
+                while (start !== -1) {
+                    var firstValue = start + 1;
+                    while (/\s/.test(responseText[firstValue] || '')) {
+                        firstValue++;
+                    }
+                    if (responseText[firstValue] === '{' || responseText[firstValue] === ']') {
+                        break;
+                    }
+                    start = responseText.indexOf('[', start + 1);
+                }
+
+                if (start === -1) {
+                    throw new Error('The API response does not contain a JSON array.');
+                }
+
+                var depth = 0;
+                var inString = false;
+                var escaped = false;
+
+                for (var i = start; i < responseText.length; i++) {
+                    var character = responseText[i];
+
+                    if (inString) {
+                        if (escaped) {
+                            escaped = false;
+                        } else if (character === '\\') {
+                            escaped = true;
+                        } else if (character === '"') {
+                            inString = false;
+                        }
+                    } else if (character === '"') {
+                        inString = true;
+                    } else if (character === '[') {
+                        depth++;
+                    } else if (character === ']') {
+                        depth--;
+                        if (depth === 0) {
+                            return JSON.parse(responseText.slice(start, i + 1));
+                        }
+                    }
+                }
+
+                throw new Error('The API response contains an incomplete JSON array.');
+            }
+
+            $.ajax({
+                url: 'https://www.itgenius.co.th/sandbox_api/ministockapi/public/api/products',
+                method: 'GET',
+                dataType: 'text'
+            }).done(function (responseText) {
+                try {
+                    var result = getJsonArray(responseText);
+                    if (!Array.isArray(result)) {
+                        throw new Error('The products API did not return a JSON array.');
+                    }
+
+                    var rows = [];
+                    $.each(result, function (_, item) {
+                        var row = $('<tr>');
+                        [
+                            item.id,
+                            item.product_name,
+                            item.product_barcode,
+                            item.product_qty,
+                            item.product_price,
+                            item.product_date
+                        ].forEach(function (value) {
+                            row.append($('<td>').text(value == null ? '' : value));
+                        });
+                        rows.push(row);
+                    });
+
+                    $('table tbody').append(rows);
+                } catch (error) {
+                    console.error('Unable to read products:', error);
+                    $('table tbody').append(
+                        $('<tr>').append(
+                            $('<td>').attr('colspan', 6).text('โหลดข้อมูลไม่สำเร็จ กรุณาตรวจสอบ API ใน Console')
+                        )
+                    );
+                }
+            }).fail(function (request, status, error) {
+                console.error('Unable to load products:', status, error, request.responseText);
+                $('table tbody').append(
+                    $('<tr>').append(
+                        $('<td>').attr('colspan', 6).text('โหลดข้อมูลไม่สำเร็จ กรุณาตรวจสอบ API ใน Console')
+                    )
+                );
+            });
+        });
+    </script>
+</body>
+
+</html>
